@@ -14,7 +14,7 @@ function formatSSHItemLabel(item: SSHItem): string {
 function formatSSHItem(item: SSHItem) {
   return {
     label: formatSSHItemLabel(item),
-    value: formatSSHValue(item),
+    value: item,
     key: formatSSHItemKey(item),
   };
 }

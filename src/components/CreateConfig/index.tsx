@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import TextInput from 'ink-text-input';
 import { Box, Text, useInput } from 'ink';
-import type { SSHItem, SSHItemPickKey } from '../../types';
-type label = keyof SSHItemPickKey;
-const stepLabels: (keyof SSHItemPickKey)[] = [
+import type { SSHItem, SSHItemOmitKey } from '../../types';
+
+const stepLabels: (keyof SSHItemOmitKey)[] = [
   'host',
   'user',
   'port',
@@ -11,17 +11,19 @@ const stepLabels: (keyof SSHItemPickKey)[] = [
   'tag',
   'remark',
 ];
+
 type props = {
   onCreate: (item: SSHItem) => void;
 };
+
 function CreateConfig({ onCreate }: props) {
   const [step, setStep] = useState(0);
-  const [config, setConfig] = useState<(keyof SSHItemPickKey)[]>([]);
+  const [config, setConfig] = useState<string[]>([]);
 
   const label = stepLabels[step];
   const value = config[step] || '';
 
-  const onChange = (value: label) => {
+  const onChange = (value: string) => {
     const newConfig = [...config];
     newConfig[step] = value;
     setConfig(newConfig);
@@ -70,11 +72,13 @@ function CreateConfig({ onCreate }: props) {
           onChange={onChange}
           onSubmit={() => {
             const key = new Date().getTime();
-            const value = stepLabels.reduce((acc, label, index) => {
-              acc[label] = config[index] || '';
-              return acc;
-            }, {} as SSHItemPickKey);
-            onCreate({ ...value, key });
+            const value = Object.fromEntries(
+              stepLabels.map((label, index) => [label, config[index] || '']),
+            ) as SSHItemOmitKey;
+            onCreate({
+              ...value,
+              key
+            });
           }}
         />
       </Box>
